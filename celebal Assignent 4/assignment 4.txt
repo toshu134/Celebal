@@ -1,0 +1,132 @@
+Task 1
+SELECT DISTINCT CITY
+FROM STATION
+WHERE
+    LOWER(SUBSTR(CITY, 1, 1)) IN ('a', 'e', 'i', 'o', 'u') AND
+    LOWER(SUBSTR(CITY, LENGTH(CITY), 1)) IN ('a', 'e', 'i', 'o', 'u');
+
+Task 2
+SELECT
+    ROUND(
+        SQRT(
+            POWER(MAX(LAT_N) - MIN(LAT_N), 2) +
+            POWER(MAX(LONG_W) - MIN(LONG_W), 2)
+        ),
+    4)
+FROM
+    STATION
+
+Task 3
+SELECT MAX(Population) - MIN(Population) FROM CITY;
+
+Task 4
+SELECT
+    ROUND(
+        SQRT(
+            POWER(MAX(LAT_N) - MIN(LAT_N), 2) +
+            POWER(MAX(LONG_W) - MIN(LONG_W), 2)
+        ),
+    4)
+FROM
+    STATION;
+
+Task 5
+SELECT
+    ROUND(CAST(AVG(sub.LAT_N) AS DECIMAL(10, 4)), 4)
+FROM
+    (SELECT
+        LAT_N,
+        ROW_NUMBER() OVER (ORDER BY LAT_N) AS rn,
+        COUNT(*) OVER () AS total_count
+    FROM
+        STATION) AS sub
+WHERE
+    sub.rn IN (FLOOR((sub.total_count + 1) / 2), CEIL((sub.total_count + 1) / 2));
+
+
+Task 6 
+SELECT
+    C.Name
+FROM
+    CITY C
+JOIN
+    COUNTRY CO
+ON
+    C.CountryCode = CO.Code
+WHERE
+    CO.Continent = 'Africa';
+
+Task 7
+SELECT
+    (CASE
+        WHEN G.Grade >= 8 THEN S.Name
+        ELSE 'NULL'
+    END),
+    G.Grade,
+    S.Marks
+FROM
+    Students S
+JOIN
+    Grades G
+ON
+    S.Marks BETWEEN G.Min_Mark AND G.Max_Mark
+ORDER BY
+    G.Grade DESC,
+    (CASE
+        WHEN G.Grade >= 8 THEN S.Name
+        ELSE 'zzzzzzzz' -- A high string value to push NULL names to the end for grades >= 8
+    END) ASC,
+    S.Marks ASC;
+
+Task 8
+ SELECT
+    H.hacker_id,
+    H.name
+FROM
+    Hackers H
+JOIN
+    Submissions S ON H.hacker_id = S.hacker_id
+JOIN
+    Challenges C ON S.challenge_id = C.challenge_id
+JOIN
+    Difficulty D ON C.difficulty_level = D.difficulty_level
+WHERE
+    S.score = D.score
+    AND D.score = C.max_score
+GROUP BY
+    H.hacker_id,
+    H.name
+HAVING
+    COUNT(S.challenge_id) > 1
+ORDER BY
+    COUNT(S.challenge_id) DESC,
+    H.hacker_id ASC;
+
+
+Task 9 
+SELECT W.id, WP.age, W.coins_needed, W.power 
+FROM Wands 
+W JOIN Wands_Property WP ON W.code = WP.code
+WHERE WP.is_evil = 0 
+AND W.coins_needed = (SELECT MIN(W2.coins_needed)
+FROM Wands W2 WHERE W2.code = W.code 
+AND W2.power = W.power) ORDER BY W.power DESC, WP.age DESC;
+
+Task 10
+ SELECT
+    (CASE
+        WHEN G.Grade >= 8 THEN S.Name
+        ELSE 'NULL'
+    END),
+    G.Grade,
+    S.Marks
+FROM
+    Students S
+JOIN
+    Grades G
+ON
+    S.Marks BETWEEN G.Min_Mark AND G.Max_Mark
+ORDER BY
+    G.Grade DESC,
+    S.Name ASC,
+    S.Marks ASC;
